@@ -8,6 +8,11 @@ import java.io.File
 import java.util.*
 import kotlin.math.abs
 import kotlin.system.measureNanoTime
+import java.io.IOException
+import lesson1.JavaTasks.mergeArrays
+import org.junit.jupiter.api.Assertions.assertThrows
+import java.time.DateTimeException
+
 
 abstract class AbstractTaskTests : AbstractFileTests() {
 
@@ -42,6 +47,24 @@ abstract class AbstractTaskTests : AbstractFileTests() {
         try {
             sortTimes("input/time_in3.txt", "temp.txt")
             assertFileContent("temp.txt", File("input/time_out3.txt").readLines())
+        } finally {
+            File("temp.txt").delete()
+        }
+        //  DateTimeException test
+        try {
+            assertThrows(DateTimeException::class.java) { sortTimes("input/time_in4.txt", "temp.txt") }
+        } finally {
+            File("temp.txt").delete()
+        }
+        //  IllegalArgumentException test
+        try {
+            assertThrows(IllegalArgumentException::class.java) { sortTimes("input/time_in5.txt", "temp.txt") }
+        } finally {
+            File("temp.txt").delete()
+        }
+        //  IOException test
+        try {
+            assertThrows(IOException::class.java) { sortTimes("input/time_in6.txt", "temp.txt") }
         } finally {
             File("temp.txt").delete()
         }
@@ -274,6 +297,30 @@ abstract class AbstractTaskTests : AbstractFileTests() {
                         32
                     """.trimIndent()
             )
+        } finally {
+            File("temp.txt").delete()
+        }
+        // Little input
+        try {
+            sortSequence("input/seq_in6.txt", "temp.txt")
+            assertFileContent(
+                "temp.txt",
+                """
+                        0
+                    """.trimIndent()
+            )
+        } finally {
+            File("temp.txt").delete()
+        }
+        //  IllegalArgumentException test
+        try {
+            assertThrows(IllegalArgumentException::class.java) { sortTimes("input/seq_in7.txt", "temp.txt") }
+        } finally {
+            File("temp.txt").delete()
+        }
+        //  IOException test
+        try {
+            assertThrows(IOException::class.java) { sortTimes("input/seq_in8.txt", "temp.txt") }
         } finally {
             File("temp.txt").delete()
         }

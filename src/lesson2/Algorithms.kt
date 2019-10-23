@@ -2,6 +2,12 @@
 
 package lesson2
 
+import sun.invoke.empty.Empty
+import java.io.File
+import java.io.IOException
+import kotlin.math.max
+import kotlin.math.min
+
 /**
  * Получение наибольшей прибыли (она же -- поиск максимального подмассива)
  * Простая
@@ -94,8 +100,32 @@ fun josephTask(menNumber: Int, choiceInterval: Int): Int {
  * Если имеется несколько самых длинных общих подстрок одной длины,
  * вернуть ту из них, которая встречается раньше в строке first.
  */
+//  F - length of first String
+//  S - length of second String
+//  Time Complexity:
+//      T = O(F * S)
+//  Memory Complexity:
+//      R = O(F * S)
 fun longestCommonSubstring(first: String, second: String): String {
-    TODO()
+    val subStringMatrix = Array(first.length) { Array(second.length) { 0 } }
+    var result = ""
+    var i = 0
+    while (first.length - 1 > i) {
+        var j = 0
+        while (second.length - 1 > j) {
+            var k = 0
+            while (i + k < first.length && j + k < second.length && first[i + k] == second[j + k]) {
+                subStringMatrix[i + k][j + k] = k + 1
+                k++
+            }
+            if (k > 0) k--
+            if (subStringMatrix[i + k][j + k] > result.length) result = first.substring(i, i + k + 1)
+            j += k + 1
+        }
+        i++
+        if (subStringMatrix.size - i < result.length) return result
+    }
+    return result
 }
 
 /**
@@ -138,6 +168,60 @@ fun calcPrimesNumber(limit: Int): Int {
  * В файле буквы разделены пробелами, строки -- переносами строк.
  * Остальные символы ни в файле, ни в словах не допускаются.
  */
+//  H - count of lines
+//  W - length of lines
+//  n - count of words
+//  w - words length
+//  Time Complexity:
+//      T = O(H * W) + O(n) + O(H * W * n * (4 * 3^(w - 2))) = O(H * W * n * (4 * 3^(w - 2)))
+//  Memory Complexity:
+//      R = O(H * W * n * w) + O(n * w)
 fun baldaSearcher(inputName: String, words: Set<String>): Set<String> {
-    TODO()
+    val result = mutableSetOf<String>()
+    try {
+        require(words.all { !it.contains("""\s""".toRegex()) })
+        val matrixBalda = File(inputName).readLines().map { it.toUpperCase().split(' ').joinToString("") }
+        if (matrixBalda.isEmpty() || words.isEmpty()) return emptySet()
+        require(matrixBalda.all { it.length == matrixBalda[0].length })
+        val wordSet = words.map { it.toUpperCase() }.toMutableSet()
+        for (i in matrixBalda.indices) for (j in matrixBalda[i].indices) {
+            for (w in wordSet) if (chainStart(matrixBalda, w, i, j)) result.add(w)
+            wordSet.removeAll(result)
+            if (wordSet.isEmpty()) return result
+        }
+    } catch (ex: IOException) {
+        throw ex
+    } catch (ex: IllegalArgumentException) {
+        throw ex
+    }
+    return result
+}
+
+fun chainStart(matrix: List<String>, word: String, i: Int, j: Int): Boolean {
+    if (matrix[i][j] == word[0]) {
+        val map = Array(matrix.size) { Array(matrix[0].length) { true } }
+        return chainSearcher(matrix, map, word, 1, i, j)
+    }
+    return false
+}
+
+fun chainSearcher(matrix: List<String>, map: Array<Array<Boolean>>, word: String, ch: Int, i: Int, j: Int): Boolean {
+    map[i][j] = false
+    if (i + 1 < matrix.size) if (map[i + 1][j] && matrix[i + 1][j] == word[ch]) {
+        if (ch + 1 == word.length) return true
+        if (chainSearcher(matrix, map, word, ch + 1, i + 1, j)) return true
+    }
+    if (i - 1 > -1) if (map[i - 1][j] && matrix[i - 1][j] == word[ch]) {
+        if (ch + 1 == word.length) return true
+        if (chainSearcher(matrix, map, word, ch + 1, i - 1, j)) return true
+    }
+    if (j + 1 < matrix[i].length) if (map[i][j + 1] && matrix[i][j + 1] == word[ch]) {
+        if (ch + 1 == word.length) return true
+        if (chainSearcher(matrix, map, word, ch + 1, i, j + 1)) return true
+    }
+    if (j - 1 > -1) if (map[i][j - 1] && matrix[i][j - 1] == word[ch]) {
+        if (ch + 1 == word.length) return true
+        if (chainSearcher(matrix, map, word, ch + 1, i, j - 1)) return true
+    }
+    return false
 }

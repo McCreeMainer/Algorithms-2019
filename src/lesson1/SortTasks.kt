@@ -2,6 +2,13 @@
 
 package lesson1
 
+import java.io.File
+import java.io.IOException
+import java.time.DateTimeException
+import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoField
+import kotlin.random.Random
+
 /**
  * Сортировка времён
  *
@@ -30,10 +37,47 @@ package lesson1
  * 01:15:19 PM
  * 07:56:14 PM
  *
+ *
  * В случае обнаружения неверного формата файла бросить любое исключение.
  */
+//  N - count of lines
+//  Time Complexity:
+//      T = O(N) + O(N - 1) * O(N - 1) = O(N^2)
+//  Memory Complexity:
+//      R = O(N)
 fun sortTimes(inputName: String, outputName: String) {
-    TODO()
+    try {
+        val sort = File(inputName).readLines().toMutableList()
+        require(sort.isNotEmpty())
+        val formatter = DateTimeFormatter.ofPattern("hh:mm:ss a")
+        for (i in 1 until sort.size) {
+            val sorting = formatter.parse(sort[i])
+            var j = i
+            while (j > 0) {
+                val prev = formatter.parse(sort[j - 1])
+                if (
+                    (12 * prev.get(ChronoField.AMPM_OF_DAY) + prev.get(ChronoField.HOUR_OF_AMPM)) * 3600
+                    + prev.get(ChronoField.MINUTE_OF_HOUR) * 60
+                    + prev.get(ChronoField.SECOND_OF_MINUTE)
+                    > (12 * sorting.get(ChronoField.AMPM_OF_DAY) + sorting.get(ChronoField.HOUR_OF_AMPM)) * 3600
+                    + sorting.get(ChronoField.MINUTE_OF_HOUR) * 60
+                    + sorting.get(ChronoField.SECOND_OF_MINUTE)
+                ) {
+                    val current = sort[j]
+                    sort[j] = sort[j - 1]
+                    sort[j - 1] = current
+                    j--
+                } else break
+            }
+        }
+        File(outputName).writeText(sort.joinToString("\n"))
+    } catch (ex: IOException) {
+        throw ex
+    } catch (ex: IllegalArgumentException) {
+        throw ex
+    } catch (ex: DateTimeException) {
+        throw ex
+    }
 }
 
 /**
@@ -129,8 +173,36 @@ fun sortTemperatures(inputName: String, outputName: String) {
  * 2
  * 2
  */
+//  N - count of lines
+//  Time Complexity:
+//      T = O(N) + O(N) + O(log N) + O(N) + O(N) + O(N) = O(N)
+//  Memory Complexity:
+//      R = O(N)
 fun sortSequence(inputName: String, outputName: String) {
-    TODO()
+    val writer = File(outputName).bufferedWriter()
+    try {
+        val sort = File(inputName).readLines().map { it.toInt() }
+        require(sort.isNotEmpty())
+        val counts = mutableMapOf<Int, Int>()
+        sort.forEach { counts[it] = counts[it]?.plus(1) ?: 1 }
+        val maxVal = counts.toSortedMap().maxBy { it.value }
+        sort.forEach {
+            if (it != maxVal!!.key) {
+                writer.write("$it")
+                writer.newLine()
+            }
+        }
+        repeat(maxVal?.value ?: 0) {
+            writer.write(maxVal!!.key.toString())
+            writer.newLine()
+        }
+    } catch (ex: IOException) {
+        throw ex
+    } catch (ex: IllegalArgumentException) {
+        throw ex
+    } finally {
+        writer.close()
+    }
 }
 
 /**
@@ -151,3 +223,6 @@ fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
     TODO()
 }
 
+fun main(args: Array<String>) {
+    sortSequence("input/seq_in7.txt", "input/seq_out7.txt")
+}

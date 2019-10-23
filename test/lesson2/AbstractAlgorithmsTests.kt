@@ -1,7 +1,9 @@
 package lesson2
 
+import org.junit.jupiter.api.Assertions.assertThrows
 import java.io.BufferedWriter
 import java.io.File
+import java.io.IOException
 import java.util.*
 import kotlin.test.assertEquals
 
@@ -120,6 +122,8 @@ abstract class AbstractAlgorithmsTests {
                 File("input/ruslan_ludmila_2.txt").readText()
             ).trim()
         )
+        // Non-standard input
+        assertEquals("САС", longestCommonSubstring("САСЕСЫСОС", "СОСЫСЕСАС"))
     }
 
     fun calcPrimesNumber(calcPrimesNumber: (Int) -> Int) {
@@ -170,5 +174,14 @@ abstract class AbstractAlgorithmsTests {
                 )
             )
         )
+        // Non-standard input
+        assertEquals(setOf("SAUC"), baldaSearcher("input/balda_in4.txt", setOf("SAUC", "SAUCSAUC")))
+        // Little input
+        assertEquals(emptySet(), baldaSearcher("input/balda_in1.txt", emptySet()))
+        // IOException
+        assertThrows(IOException::class.java) { baldaSearcher("input/balda_in7.txt", setOf("ТРАВА", "САС")) }
+        // IllegalArgumentException
+        assertThrows(IllegalArgumentException::class.java) { baldaSearcher("input/balda_in1.txt", setOf("А А А")) }
+        assertThrows(IllegalArgumentException::class.java) { baldaSearcher("input/balda_in5.txt", setOf("САС")) }
     }
 }

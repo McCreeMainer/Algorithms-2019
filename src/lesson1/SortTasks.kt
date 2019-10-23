@@ -188,7 +188,7 @@ fun sortSequence(inputName: String, outputName: String) {
         val maxVal = counts.toSortedMap().maxBy { it.value }
         sort.forEach {
             if (it != maxVal!!.key) {
-                writer.write("$it")
+                writer.write(it.toString())
                 writer.newLine()
             }
         }

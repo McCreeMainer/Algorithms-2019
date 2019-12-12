@@ -2,6 +2,10 @@
 
 package lesson5
 
+import java.util.*
+import kotlin.collections.LinkedHashSet
+
+
 /**
  * Эйлеров цикл.
  * Средняя
@@ -90,8 +94,31 @@ fun Graph.minimumSpanningTree(): Graph {
  *
  * Эта задача может быть зачтена за пятый и шестой урок одновременно
  */
+// N - count of vertices
+// E - count of edges
+//  Time Complexity:
+//      T = O(min[(N * N), (N * E)])
+//  Memory Complexity:
+//      R = O(N + E)
 fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
-    TODO()
+    val largestSet = mutableSetOf<Graph.Vertex>()
+    val checked = mutableSetOf<Graph.Vertex>()
+    for (vertex in vertices)
+        if (!checked.contains(vertex)) {
+            val oddVertices = mutableSetOf<Graph.Vertex>()
+            val evenVertices = mutableSetOf<Graph.Vertex>()
+            val queue = LinkedList<Pair<Graph.Vertex, Boolean>>()
+            queue.offer(vertex to true)
+            while (queue.isNotEmpty()) {
+                val (current, available) = queue.poll()
+                if (available) oddVertices.add(current) else evenVertices.add(current)
+                for (neighbor in getNeighbors(current)) if (neighbor !in checked) queue.add(neighbor to !available)
+                checked.add(current)
+            }
+            largestSet.addAll(if (oddVertices.size >= evenVertices.size) oddVertices else evenVertices)
+        }
+
+    return largestSet
 }
 
 /**
@@ -114,6 +141,20 @@ fun Graph.largestIndependentVertexSet(): Set<Graph.Vertex> {
  *
  * Ответ: A, E, J, K, D, C, H, G, B, F, I
  */
+// N - count of vertices
+//  Time Complexity:
+//      T = O(N^2)
+//  Memory Complexity:
+//      R = O(N)
 fun Graph.longestSimplePath(): Path {
-    TODO()
+    val listOfPaths = LinkedList<Path>()
+    var longestPath = Path()
+    for (vertex in vertices) listOfPaths.offer(Path(vertex))
+    while (listOfPaths.isNotEmpty()) {
+        val path = listOfPaths.poll()
+        if (path.length > longestPath.length) longestPath = path
+        for (neighbour in getNeighbors(path.vertices[path.length]))
+            if (!path.contains(neighbour)) listOfPaths.offer(Path(path, this, neighbour))
+    }
+    return longestPath
 }

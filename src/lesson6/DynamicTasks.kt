@@ -2,6 +2,11 @@
 
 package lesson6
 
+import java.io.File
+import java.io.IOException
+import kotlin.collections.ArrayList
+import kotlin.math.min
+
 /**
  * Наибольшая общая подпоследовательность.
  * Средняя
@@ -30,8 +35,32 @@ fun longestCommonSubSequence(first: String, second: String): String {
  * то вернуть ту, в которой числа расположены раньше (приоритет имеют первые числа).
  * В примере ответами являются 2, 8, 9, 12 или 2, 5, 9, 12 -- выбираем первую из них.
  */
+// N - size of list
+//  Time Complexity:
+//      T = O(N) + O(N) + O(N) = O(N)
+//  Memory Complexity:
+//      R = O(N) + O(N)
 fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
-    TODO()
+    if (list.isEmpty()) return listOf()
+    val length = Array(list.size) { 1 }
+    val prev = Array(list.size) { -1 }
+    for (i in 1 until list.size) {
+        for (j in 0 until i) {
+            if (list[j] < list[i] && length[i] <= length[j]) {
+                prev[i] = j
+                length[i] = length[j] + 1
+            }
+        }
+    }
+    val longestSequence = mutableListOf<Int>()
+    var i = 0
+    for (l in 1 until length.size)
+        if (length[l] > length[i]) i = l
+    while (i >= 0) {
+        longestSequence.add(list[i])
+        i = prev[i]
+    }
+    return longestSequence.reversed()
 }
 
 /**
@@ -54,8 +83,33 @@ fun longestIncreasingSubSequence(list: List<Int>): List<Int> {
  *
  * Здесь ответ 2 + 3 + 4 + 1 + 2 = 12
  */
+// H - height of matrix
+// W - width of matrix
+//  Time Complexity:
+//      T = O(W) + O(H * W) = O(H * W)
+//  Memory Complexity:
+//      R = O(H * W)
 fun shortestPathOnField(inputName: String): Int {
-    TODO()
+    try {
+        val field = ArrayList<ArrayList<Int>>()
+        File(inputName).readLines().forEach { field.add(ArrayList(it.split(' ').map { init -> init.toInt() })) }
+        val width = field.first().size
+        for (i in 1 until width) field[0][i] += field[0][i - 1]
+        for (i in 1 until field.size) {
+            field[i][0] += field[i - 1][0]
+            for (j in 1 until width)
+                field[i][j] = min(
+                    min(
+                        field[i][j] + field[i - 1][j],
+                        field[i][j] + field[i][j - 1]
+                    ),
+                    field[i][j] + field[i - 1][j - 1]
+                )
+        }
+        return field[field.size - 1][width - 1]
+    } catch (e: IOException) {
+        return 0
+    }
 }
 
 // Задачу "Максимальное независимое множество вершин в графе без циклов"

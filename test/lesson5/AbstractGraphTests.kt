@@ -327,6 +327,63 @@ abstract class AbstractGraphTests {
         }.build()
         val longestPath3 = graph3.longestSimplePath()
         assertEquals(6, longestPath3.length)
+
+        //    G -- F ---
+        //         |    |
+        //    A -- C -- E
+        //    |    |    |
+        //    B    D ---
+        val graph4 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            val f = addVertex("F")
+            val g = addVertex("G")
+            addConnection(a, b)
+            addConnection(a, c)
+            addConnection(c, d)
+            addConnection(c, e)
+            addConnection(c, f)
+            addConnection(d, e)
+            addConnection(e, f)
+            addConnection(f, g)
+        }.build()
+        val longestPath4 = graph4.longestSimplePath()
+        assertEquals(6, longestPath4.length)
+
+        val graph5 = GraphBuilder().apply {
+            val a = addVertex("A")
+        }.build()
+        val longestPath5 = graph5.longestSimplePath()
+        assertEquals(0, longestPath5.length)
+
+        val graph6 = GraphBuilder().apply {
+            val a = addVertex("A")
+            val b = addVertex("B")
+            val c = addVertex("C")
+            val d = addVertex("D")
+            val e = addVertex("E")
+            val f = addVertex("F")
+            addConnection(a, b)
+            addConnection(a, c)
+            addConnection(a, d)
+            addConnection(a, e)
+            addConnection(a, f)
+            addConnection(b, c)
+            addConnection(b, d)
+            addConnection(b, e)
+            addConnection(b, f)
+            addConnection(c, d)
+            addConnection(c, e)
+            addConnection(c, f)
+            addConnection(d, e)
+            addConnection(d, f)
+            addConnection(e, f)
+        }.build()
+        val longestPath6 = graph6.longestSimplePath()
+        assertEquals(5, longestPath6.length)
     }
 
 }

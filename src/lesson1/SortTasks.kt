@@ -222,7 +222,3 @@ fun sortSequence(inputName: String, outputName: String) {
 fun <T : Comparable<T>> mergeArrays(first: Array<T>, second: Array<T?>) {
     TODO()
 }
-
-fun main(args: Array<String>) {
-    sortSequence("input/seq_in7.txt", "input/seq_out7.txt")
-}

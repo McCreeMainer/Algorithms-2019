@@ -1,5 +1,6 @@
 package lesson6
 
+import java.io.File
 import kotlin.test.assertEquals
 
 abstract class AbstractDynamicTests {
@@ -55,6 +56,17 @@ abstract class AbstractDynamicTests {
                 )
             )
         )
+        assertEquals(listOf(8), longestIncreasingSubSequence(listOf(8, 8, 8, 8)))
+        assertEquals(listOf(5), longestIncreasingSubSequence(listOf(5, 4, 3, 2, 1)))
+        val bigList = File("input/bigList_for_subSeq.txt").readText().split(' ').map { it.toInt() }
+        assertEquals(
+            listOf(
+                0, 66, 109, 119, 139, 152, 174, 186, 194, 221, 269, 274, 280, 306, 360, 367, 369, 375, 392, 399, 409,
+                416, 423, 470, 485, 496, 497, 501, 531, 546, 559, 576, 603, 622, 625, 634, 635, 651, 662, 670, 686, 693,
+                740, 774, 780, 792, 804, 816, 818, 824, 844, 845, 859, 879, 907, 937, 969, 974
+            ),
+            longestIncreasingSubSequence(bigList)
+        )
     }
 
     fun shortestPathOnField(shortestPathOnField: (String) -> Int) {
@@ -64,6 +76,7 @@ abstract class AbstractDynamicTests {
         assertEquals(28, shortestPathOnField("input/field_in4.txt"))
         assertEquals(222, shortestPathOnField("input/field_in5.txt"))
         assertEquals(15, shortestPathOnField("input/field_in6.txt"))
+        assertEquals(0, shortestPathOnField("THIS_FILE_IS_NOT_EXIST"))
     }
 
 }
